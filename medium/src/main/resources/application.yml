@@ -1,0 +1,28 @@
+server:
+  port: 8090
+
+management:
+  security:
+    enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/conduit?currentSchema=test1
+    username: admin
+    password: admin
+  security:
+    password: user
+
+medium:
+  jwt:
+    token-secret: jwtSecret123
+    expiration-ms: 86400
+
+logging:
+  level:
+    org:
+      root: INFO
