@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 /**
@@ -17,15 +18,16 @@ import lombok.Data;
 @Entity
 @Table(name = "FOLLOWERS")
 @Data
+@NoArgsConstructor
 public class Follower {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
-  private final UUID id;
+  private UUID id;
   @Column(name = "follower_id")
-  private final UUID followerId;
+  private UUID followerId;
   @Column(name = "followed_id")
-  private final UUID followedId;
+  private UUID followedId;
   @Column(name = "created_at")
-  private final LocalDateTime createdAt;
+  private LocalDateTime createdAt;
 }

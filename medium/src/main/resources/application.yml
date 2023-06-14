@@ -16,11 +16,13 @@ spring:
     password: admin
   security:
     password: user
+  main:
+    allow-circular-references: true
 
 medium:
   jwt:
     token-secret: jwtSecret123
-    expiration-ms: 86400
+    expiration-second: 3600
 
 logging:
   level:

@@ -16,5 +16,5 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "medium.jwt")
 public class JwtTokenConfig {
   private String tokenSecret;
-  private String expirationMs;
+  private String expirationSecond;
 }

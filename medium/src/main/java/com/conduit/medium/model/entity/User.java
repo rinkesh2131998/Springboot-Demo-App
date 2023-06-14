@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -17,21 +18,22 @@ import lombok.Setter;
 @Entity
 @Table(name = "users")
 @Getter
+@NoArgsConstructor
 public class User {
   @Column(name = "user_name")
-  private final String userName;
+  private String userName;
   @Column(name = "email")
-  private final String email;
+  private String email;
   @Column(name = "password")
-  private final String password;
+  private String password;
   @Column(name = "bio")
-  private final String bio;
+  private String bio;
   @Column(name = "image")
-  private final String image;
+  private String image;
   @Column(name = "created_at")
-  private final LocalDateTime createdAt;
+  private LocalDateTime createdAt;
   @Column(name = "updated_at")
-  private final LocalDateTime updatedAt;
+  private LocalDateTime updatedAt;
   @Id
   @Column(name = "user_id")
   @GeneratedValue(strategy = GenerationType.AUTO)

@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 /**
@@ -16,13 +17,14 @@ import lombok.Data;
 @Entity
 @Table(name = "tags_to_articles")
 @Data
+@NoArgsConstructor
 public class TagToArticle {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
-  private final UUID id;
+  private UUID id;
   @Column(name = "article_id")
-  private final UUID articleId;
+  private UUID articleId;
   @Column(name = "tag_id")
-  private final UUID tagId;
+  private UUID tagId;
 }

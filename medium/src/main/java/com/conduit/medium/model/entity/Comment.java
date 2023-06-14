@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * comment entity class for db.
@@ -14,16 +15,17 @@ import lombok.Data;
 @Entity
 @Table(name = "COMMENTS")
 @Data
+@NoArgsConstructor
 public class Comment {
   @Id
   @Column(name = "comment_id")
-  private final UUID commentId;
+  private UUID commentId;
   @Column(name = "user_id")
-  private final UUID userId;
+  private UUID userId;
   @Column(name = "article_id")
-  private final UUID articleId;
+  private UUID articleId;
   @Column(name = "created_at")
-  private final LocalDateTime createdAt;
+  private LocalDateTime createdAt;
   @Column(name = "updated_at")
-  private final LocalDateTime updatedAt;
+  private LocalDateTime updatedAt;
 }

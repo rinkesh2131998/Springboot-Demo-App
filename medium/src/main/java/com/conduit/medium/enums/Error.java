@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum Error {
   GENERIC_ERROR("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR),
   //auth errors
-  USERNAME_NOT_FOUND_EXCEPTION("Given username not found",
+  USERNAME_NOT_FOUND_EXCEPTION("Given username/email not found",
       HttpStatus.NOT_FOUND),
   USERNAME_EXISTS_EXCEPTION("Given username is already registered", HttpStatus.BAD_REQUEST),
   EMAIL_EXISTS_EXCEPTION("Given email is already in use", HttpStatus.BAD_REQUEST),

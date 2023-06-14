@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * favourite data class to map user with favourite articles for db.
@@ -15,13 +16,14 @@ import lombok.Data;
 @Entity
 @Table(name = "FAVOURITES")
 @Data
+@NoArgsConstructor
 public class Favourite {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id")
-  private final UUID id;
+  private UUID id;
   @Column(name = "user_id")
-  private final UUID userId;
+  private UUID userId;
   @Column(name = "article_id")
-  private final UUID articleId;
+  private UUID articleId;
 }
