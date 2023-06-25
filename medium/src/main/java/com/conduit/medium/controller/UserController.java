@@ -31,23 +31,23 @@ public class UserController {
   private final UserService userService;
 
   @PostMapping()
-  public UserResponse createUser(@RequestBody UserRegisterRequest payload) {
+  public UserResponse createUser(@RequestBody final UserRegisterRequest payload) {
     return authService.registerUser(payload);
   }
 
   @PostMapping("/login")
-  public UserResponse login(@RequestBody LoginRequest payload) {
+  public UserResponse login(@RequestBody final LoginRequest payload) {
     return authService.loginUser(payload);
   }
 
   @GetMapping()
-  public UserResponse getUser(@AuthenticationPrincipal UserDetailsImpl payload) {
+  public UserResponse getUser(@AuthenticationPrincipal final UserDetailsImpl payload) {
     return userService.getCurrentUser(payload);
   }
 
   @PutMapping()
-  public UserResponse updateUser(@AuthenticationPrincipal UserDetailsImpl authPrinciple,
-                                 @RequestBody UserUpdateRequest payload) {
+  public UserResponse updateUser(@AuthenticationPrincipal final UserDetailsImpl authPrinciple,
+                                 @RequestBody final UserUpdateRequest payload) {
     return userService.updateUser(authPrinciple, payload);
   }
 }
