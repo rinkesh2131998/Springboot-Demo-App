@@ -1,6 +1,7 @@
 package com.conduit.medium.service.user;
 
 import com.conduit.medium.dto.user.UserResponse;
+import com.conduit.medium.dto.user.UserUpdateRequest;
 import com.conduit.medium.security.service.UserDetailsImpl;
 import org.springframework.stereotype.Service;
 
@@ -17,4 +18,13 @@ public interface UserService {
    * @return all user details for the current user
    */
   UserResponse getCurrentUser(UserDetailsImpl payload);
+
+  /**
+   * update user details.
+   *
+   * @param userDetails used to get the current user for which the update needs to be done
+   * @param payload     containing fields that can be updated
+   * @return user object in case of successfully update
+   */
+  UserResponse updateUser(UserDetailsImpl userDetails, UserUpdateRequest payload);
 }

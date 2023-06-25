@@ -3,6 +3,7 @@ package com.conduit.medium.controller;
 import com.conduit.medium.dto.user.LoginRequest;
 import com.conduit.medium.dto.user.UserRegisterRequest;
 import com.conduit.medium.dto.user.UserResponse;
+import com.conduit.medium.dto.user.UserUpdateRequest;
 import com.conduit.medium.security.service.UserDetailsImpl;
 import com.conduit.medium.service.auth.AuthService;
 import com.conduit.medium.service.user.UserService;
@@ -12,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,5 +43,11 @@ public class UserController {
   @GetMapping()
   public UserResponse getUser(@AuthenticationPrincipal UserDetailsImpl payload) {
     return userService.getCurrentUser(payload);
+  }
+
+  @PutMapping()
+  public UserResponse updateUser(@AuthenticationPrincipal UserDetailsImpl authPrinciple,
+                                 @RequestBody UserUpdateRequest payload) {
+    return userService.updateUser(authPrinciple, payload);
   }
 }
