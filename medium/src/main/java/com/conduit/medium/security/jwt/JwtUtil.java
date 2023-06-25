@@ -33,7 +33,7 @@ public class JwtUtil {
 
     final Date issuedAt = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
     final Date expiration = Date.from(expirationTime.atZone(ZoneId.systemDefault()).toInstant());
-    
+
     return Jwts.builder()
         .setSubject(userDetails.getUsername())
         .setIssuedAt(issuedAt)
@@ -43,14 +43,14 @@ public class JwtUtil {
   }
 
   public String getUsernameFromToken(final String jwtToken) {
-    return Jwts.parser().setSigningKey(jwtTokenConfig.getTokenSecret()).parseClaimsJwt(jwtToken)
+    return Jwts.parser().setSigningKey(jwtTokenConfig.getTokenSecret()).parseClaimsJws(jwtToken)
         .getBody().getSubject();
   }
 
   @SuppressWarnings("PlaceholderCountMatchesArgumentCount")
   public boolean validateJwtToken(final String jwtToken) {
     try {
-      Jwts.parser().setSigningKey(jwtTokenConfig.getTokenSecret()).parseClaimsJwt(jwtToken);
+      Jwts.parser().setSigningKey(jwtTokenConfig.getTokenSecret()).parseClaimsJws(jwtToken);
       return true;
     } catch (final SignatureException var1) {
       log.error("Invalid JWT signature: [{}]", var1);

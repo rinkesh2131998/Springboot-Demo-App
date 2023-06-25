@@ -48,7 +48,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
       }
     } catch (final Exception exception) {
-      log.error("Exception while authentication: [{}]", exception);
+      log.error("Exception while authentication: [{}]", exception.getMessage());
     }
     filterChain.doFilter(request, response);
   }
