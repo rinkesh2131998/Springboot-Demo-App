@@ -72,7 +72,8 @@ public class WebSecurityConfig {
         httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(
             SessionCreationPolicy.STATELESS));
     http.authorizeHttpRequests(auth -> {
-      auth.requestMatchers("/actuator", "/actuator/**", "/api/users", "/api/users/login")
+      auth.requestMatchers("/actuator", "/actuator/**", "/api/users", "/api/users/login",
+              "/v3/**", "/swagger-ui.html", "/swagger-ui/**")
           .permitAll()
           .anyRequest().authenticated();
     });
