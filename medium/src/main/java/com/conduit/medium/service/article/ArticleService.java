@@ -19,4 +19,13 @@ public interface ArticleService {
    * @return complete article detail object
    */
   ArticleResponse createArticle(UserDetailsImpl userDetails, CreateArticleRequest articleRequest);
+
+  /**
+   * fetch a article with the given slug.
+   *
+   * @param userDetails requesting user
+   * @param slug        used to fetch the article
+   * @return article details
+   */
+  ArticleResponse getArticle(UserDetailsImpl userDetails, String slug);
 }

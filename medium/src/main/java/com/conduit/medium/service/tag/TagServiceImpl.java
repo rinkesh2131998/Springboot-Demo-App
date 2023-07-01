@@ -4,6 +4,7 @@ import com.conduit.medium.model.entity.Tag;
 import com.conduit.medium.model.entity.TagToArticle;
 import com.conduit.medium.repository.TagRepository;
 import com.conduit.medium.repository.TagToArticleRepository;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -48,6 +49,9 @@ public class TagServiceImpl implements TagService {
   @Override
   public List<String> getTags(final UUID articleId) {
     final List<TagToArticle> allByArticleId = toArticleRepository.findAllByArticleId(articleId);
+    if (allByArticleId.isEmpty()) {
+      return Collections.emptyList();
+    }
     return allByArticleId.parallelStream()
         .map(tagToArticle -> tagRepository.findById(tagToArticle.getTagId()).orElse(null))
         .filter(Objects::nonNull)

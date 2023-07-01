@@ -10,6 +10,7 @@ import com.conduit.medium.repository.UserRepository;
 import com.conduit.medium.security.service.UserDetailsImpl;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,15 @@ public class ProfileServiceImpl implements ProfileService {
   private final UserRepository userRepository;
   private final FollowerRepository followerRepository;
 
+  private static ProfileResponse toProfileResponseDto(final Optional<User> followed,
+                                                      final boolean isFollowing) {
+    return ProfileResponse.builder()
+        .username(followed.get().getUserName())
+        .image(followed.get().getImage())
+        .bio(followed.get().getBio())
+        .following(isFollowing).build();
+  }
+
   @Override
   public ProfileResponse getProfile(final UserDetailsImpl userDetails, final String username) {
     log.info("Fetching profiles for user: [{}]", username);
@@ -37,11 +47,22 @@ public class ProfileServiceImpl implements ProfileService {
             followed.get().getUserId());
     final boolean isFollowing = byFollowerIdAndFollowedId.isPresent();
     log.info("Fetched user profile for: [{}]", username);
-    return ProfileResponse.builder()
-        .username(username)
-        .image(followed.get().getImage())
-        .bio(followed.get().getBio())
-        .following(isFollowing).build();
+    return toProfileResponseDto(followed, isFollowing);
+  }
+
+  @Override
+  public ProfileResponse getProfile(final UUID requestingUserId, final UUID userId) {
+    log.info("Fetching profiles for user: [{}]", userId);
+    final Optional<User> followed = userRepository.findById(userId);
+    validateIfUserExists(userId.toString(), followed.isEmpty());
+    final Optional<User> follower = userRepository.findById(requestingUserId);
+    validateIfUserExists(requestingUserId.toString(), follower.isEmpty());
+    final Optional<Follower> byFollowerIdAndFollowedId =
+        followerRepository.findByFollowerIdAndFollowedId(follower.get().getUserId(),
+            followed.get().getUserId());
+    final boolean isFollowing = byFollowerIdAndFollowedId.isPresent();
+    log.info("Fetched user profile for: [{}]", userId);
+    return toProfileResponseDto(followed, isFollowing);
   }
 
   @Override
@@ -87,10 +108,10 @@ public class ProfileServiceImpl implements ProfileService {
         .following(false).build();
   }
 
-  private void validateIfUserExists(final String username,
+  private void validateIfUserExists(final String usernameOrId,
                                     final boolean isUserEmpty) {
     if (isUserEmpty) {
-      log.error("Unable to find user with username: [{}]", username);
+      log.error("Unable to find user with username/userId: [{}]", usernameOrId);
       throw new ApplicationException(Error.USERNAME_NOT_FOUND_EXCEPTION);
     }
   }

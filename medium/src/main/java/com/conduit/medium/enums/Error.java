@@ -17,7 +17,9 @@ public enum Error {
   EMAIL_NOT_EXIST("Given email is not registered to any user, Unable to login",
       HttpStatus.UNAUTHORIZED),
   INVALID_PASSWORD("Incorrect password Entered", HttpStatus.UNAUTHORIZED),
-  FOLLOWER_REMOVAL_EXCEPTION("Unable to remove follower", HttpStatus.BAD_REQUEST);
+  FOLLOWER_REMOVAL_EXCEPTION("Unable to remove follower", HttpStatus.BAD_REQUEST),
+  ARTICLE_NOT_FOUND_EXCEPTION("Unable to find the article with the given params",
+      HttpStatus.BAD_REQUEST);
 
   private final String errorMessage;
   private final HttpStatus httpStatus;

@@ -10,4 +10,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface FavouriteRepository extends JpaRepository<Favourite, UUID> {
+  boolean existsByUserIdAndArticleId(UUID userId, UUID articleId);
+
+  long countByArticleId(UUID articleId);
 }

@@ -15,7 +15,7 @@ import lombok.Builder;
 @Builder
 public record ArticleResponse(String slug, String title, String description, String body,
                               List<String> tagList, LocalDateTime createdAt,
-                              LocalDateTime updatedAt, boolean favorited, int favoritesCount,
+                              LocalDateTime updatedAt, boolean favorited, long favoritesCount,
                               com.conduit.medium.dto.article.ArticleResponse.Author author) {
   @Builder
   public record Author(ProfileResponse profileResponse) {

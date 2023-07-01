@@ -2,6 +2,7 @@ package com.conduit.medium.service.profile;
 
 import com.conduit.medium.dto.profile.ProfileResponse;
 import com.conduit.medium.security.service.UserDetailsImpl;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,6 +20,15 @@ public interface ProfileService {
    * @return profile of the user with the given username
    */
   ProfileResponse getProfile(UserDetailsImpl userDetails, String username);
+
+  /**
+   * get the profile of a user.
+   *
+   * @param requestingUserId used to get the user requesting the profile
+   * @param userId           used to fetch the profile
+   * @return profile of the user with the given username
+   */
+  ProfileResponse getProfile(UUID requestingUserId, UUID userId);
 
   /**
    * follow the user with given username.
