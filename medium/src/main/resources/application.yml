@@ -27,4 +27,4 @@ medium:
 logging:
   level:
     org:
-      root: INFO
+      root: DEBUG

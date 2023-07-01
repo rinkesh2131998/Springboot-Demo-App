@@ -71,15 +71,15 @@ public class WebSecurityConfig {
     http.sessionManagement(
         httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(
             SessionCreationPolicy.STATELESS));
+    http.authenticationProvider(authenticationProvider());
+    http.addFilterBefore(authenticationJwtTokenFilter(),
+        UsernamePasswordAuthenticationFilter.class);
     http.authorizeHttpRequests(auth -> {
       auth.requestMatchers("/actuator", "/actuator/**", "/api/users", "/api/users/login",
               "/v3/**", "/swagger-ui.html", "/swagger-ui/**")
           .permitAll()
           .anyRequest().authenticated();
     });
-    http.authenticationProvider(authenticationProvider());
-    http.addFilterBefore(authenticationJwtTokenFilter(),
-        UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 }

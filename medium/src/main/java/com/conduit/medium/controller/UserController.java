@@ -25,27 +25,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @CrossOrigin
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserController {
   private final AuthService authService;
   private final UserService userService;
 
-  @PostMapping()
+  @PostMapping("/users")
   public UserResponse createUser(@RequestBody final UserRegisterRequest payload) {
     return authService.registerUser(payload);
   }
 
-  @PostMapping("/login")
+  @PostMapping("/users/login")
   public UserResponse login(@RequestBody final LoginRequest payload) {
     return authService.loginUser(payload);
   }
 
-  @GetMapping()
+  @GetMapping("/users")
   public UserResponse getUser(@AuthenticationPrincipal final UserDetailsImpl payload) {
     return userService.getCurrentUser(payload);
   }
 
-  @PutMapping()
+  @PutMapping("/user")
   public UserResponse updateUser(@AuthenticationPrincipal final UserDetailsImpl authPrinciple,
                                  @RequestBody final UserUpdateRequest payload) {
     return userService.updateUser(authPrinciple, payload);

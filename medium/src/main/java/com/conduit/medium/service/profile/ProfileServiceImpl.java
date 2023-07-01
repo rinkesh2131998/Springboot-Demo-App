@@ -8,6 +8,7 @@ import com.conduit.medium.model.entity.User;
 import com.conduit.medium.repository.FollowerRepository;
 import com.conduit.medium.repository.UserRepository;
 import com.conduit.medium.security.service.UserDetailsImpl;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,7 @@ public class ProfileServiceImpl implements ProfileService {
     final Follower followerObject = new Follower();
     followerObject.setFollowerId(follower.get().getUserId());
     followerObject.setFollowedId(followed.get().getUserId());
+    followerObject.setCreatedAt(LocalDateTime.now());
     followerRepository.save(followerObject);
     log.info("Added user: [{}] as [{}] follower", userDetails.getUsername(), username);
     return ProfileResponse.builder()
