@@ -28,12 +28,12 @@ public class TagServiceImpl implements TagService {
   public Tag addTag(final String tag) {
     log.info("Adding tag: [{}] to db", tag);
     final Optional<Tag> byName = tagRepository.findByName(tag);
-    final Tag tagToSave = new Tag();
-    tagToSave.setName(tag);
     if (byName.isPresent()) {
       log.info("Tag: [{}], already present, not adding again", tag);
-      return tagToSave;
+      return byName.get();
     }
+    final Tag tagToSave = new Tag();
+    tagToSave.setName(tag);
     tagRepository.save(tagToSave);
     log.info("Saved tag: [{}], to db", tag);
     return tagToSave;

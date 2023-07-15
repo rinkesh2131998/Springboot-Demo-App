@@ -11,7 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * tags table class for db.
+ * tagList table class for db.
  */
 @Entity
 @Table(name = "tags")

@@ -81,6 +81,7 @@ public class UserDetailsImpl implements UserDetails {
 
   @Override
   public boolean equals(final Object object) {
+    log.debug("Comparing UserDetailsImpl object");
     if (this == object) {
       return true;
     }

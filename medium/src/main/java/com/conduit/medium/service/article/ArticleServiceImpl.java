@@ -24,6 +24,7 @@ import java.util.UUID;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * implementation of articleService interface.
@@ -41,6 +42,7 @@ public class ArticleServiceImpl implements ArticleService {
   private final FavouriteRepository favouriteRepository;
 
   @Override
+  @Transactional
   public ArticleResponse createArticle(final UserDetailsImpl userDetails,
                                        final CreateArticleRequest articleRequest) {
     log.info("Creating new article with title: [{}]", articleRequest.title());
@@ -50,13 +52,18 @@ public class ArticleServiceImpl implements ArticleService {
       log.debug("Unable to fetch user id for the user requesting creation of article");
       throw new ApplicationException(Error.USERNAME_NOT_FOUND_EXCEPTION);
     }
-    final Article article =
-        articleRepository.save(ArticleUtil.articleDtoToEntity(articleRequest,
-            byUserName.get().getUserId()));
-    log.info("Saved article with id: [{}] to db, returning article response",
-        article.getArticleId());
-    saveNewTags(articleRequest, article.getArticleId());
-    return toArticleResponseDto(byUserName.get().getUserId(), article);
+    try {
+      final Article article =
+          articleRepository.save(ArticleUtil.articleDtoToEntity(articleRequest,
+              byUserName.get().getUserId()));
+      log.info("Saved article with id: [{}] to db, returning article response",
+          article.getArticleId());
+      saveNewTags(articleRequest, article.getArticleId());
+      return toArticleResponseDto(byUserName.get().getUserId(), article);
+    } catch (final Exception exception) {
+      log.debug("Unable to create new article, cause: [{}]", exception.getMessage());
+      throw new ApplicationException(Error.ARTICLE_NOT_CREATED_EXCEPTION);
+    }
   }
 
   @Override
@@ -75,20 +82,20 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   private void saveNewTags(final CreateArticleRequest articleRequest, final UUID articleId) {
-    log.debug("Mapping any tags needed to article: [{}]", articleId);
-    if (Objects.isNull(articleRequest.tags())) {
-      log.debug("No tags present to add to this article");
+    log.debug("Mapping any tagList needed to article: [{}]", articleId);
+    if (Objects.isNull(articleRequest.tagList())) {
+      log.debug("No tagList present to add to this article");
       return;
     }
-    final List<Tag> tags = tagService.addTag(articleRequest.tags());
-    log.debug("Added new tags to db");
+    final List<Tag> tags = tagService.addTag(articleRequest.tagList());
+    log.debug("Added new tagList to db");
     tags.parallelStream().map(tag -> {
       final TagToArticle tagToArticle = new TagToArticle();
       tagToArticle.setArticleId(articleId);
       tagToArticle.setTagId(tag.getTagId());
       return tagToArticle;
     }).forEach(toArticleRepository::save);
-    log.debug("Mapped tags to new articles.");
+    log.debug("Mapped tagList to new articles.");
   }
 
   private ArticleResponse toArticleResponseDto(UUID userId, Article article) {

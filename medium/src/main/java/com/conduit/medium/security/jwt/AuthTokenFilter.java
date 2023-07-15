@@ -39,6 +39,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       final String jwtToken = parseJwt(request);
 
       if (Objects.nonNull(jwtToken) && jwtUtil.validateJwtToken(jwtToken)) {
+        log.debug("Authenticated jwt token");
         final String userName = jwtUtil.getUsernameFromToken(jwtToken);
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(userName);
         final UsernamePasswordAuthenticationToken authenticationToken =
@@ -48,7 +49,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
       }
     } catch (final Exception exception) {
-      log.error("Exception while authentication: [{}]", exception.getMessage());
+      log.error("Exception while authentication-> [{}]", exception.getMessage());
     }
     filterChain.doFilter(request, response);
   }

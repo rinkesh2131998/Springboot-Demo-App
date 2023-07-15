@@ -19,7 +19,8 @@ public enum Error {
   INVALID_PASSWORD("Incorrect password Entered", HttpStatus.UNAUTHORIZED),
   FOLLOWER_REMOVAL_EXCEPTION("Unable to remove follower", HttpStatus.BAD_REQUEST),
   ARTICLE_NOT_FOUND_EXCEPTION("Unable to find the article with the given params",
-      HttpStatus.BAD_REQUEST);
+      HttpStatus.BAD_REQUEST), ARTICLE_NOT_CREATED_EXCEPTION("Unable to create new article",
+      HttpStatus.INTERNAL_SERVER_ERROR);
 
   private final String errorMessage;
   private final HttpStatus httpStatus;
