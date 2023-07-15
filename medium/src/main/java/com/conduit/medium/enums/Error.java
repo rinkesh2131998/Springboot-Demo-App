@@ -20,6 +20,11 @@ public enum Error {
   FOLLOWER_REMOVAL_EXCEPTION("Unable to remove follower", HttpStatus.BAD_REQUEST),
   ARTICLE_NOT_FOUND_EXCEPTION("Unable to find the article with the given params",
       HttpStatus.BAD_REQUEST), ARTICLE_NOT_CREATED_EXCEPTION("Unable to create new article",
+      HttpStatus.INTERNAL_SERVER_ERROR),
+  ARTICLE_AUTHOR_INVALID_EXCEPTION("The author of article is not valid", HttpStatus.BAD_REQUEST),
+  ARTICLE_TITLE_ALREADY_EXISTS_EXCEPTION("Unable to change article title as it already exists, "
+      + "cancelling request", HttpStatus.BAD_REQUEST),
+  ARTICLE_DELETE_EXCEPTION("Unable to delete the article, retry again",
       HttpStatus.INTERNAL_SERVER_ERROR);
 
   private final String errorMessage;

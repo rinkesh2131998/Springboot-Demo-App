@@ -2,6 +2,7 @@ package com.conduit.medium.service.article;
 
 import com.conduit.medium.dto.article.ArticleResponse;
 import com.conduit.medium.dto.article.CreateArticleRequest;
+import com.conduit.medium.dto.article.UpdateArticle;
 import com.conduit.medium.dto.profile.ProfileResponse;
 import com.conduit.medium.enums.Error;
 import com.conduit.medium.exception.ApplicationException;
@@ -42,7 +43,8 @@ public class ArticleServiceImpl implements ArticleService {
   private final FavouriteRepository favouriteRepository;
 
   @Override
-  @Transactional
+  // @Transactional(propagation = Propagation.REQUIRES_NEW)
+  // TODO: 7/15/23 think about how to implement proper transactions here
   public ArticleResponse createArticle(final UserDetailsImpl userDetails,
                                        final CreateArticleRequest articleRequest) {
     log.info("Creating new article with title: [{}]", articleRequest.title());
@@ -79,6 +81,68 @@ public class ArticleServiceImpl implements ArticleService {
       throw new ApplicationException(Error.USERNAME_NOT_FOUND_EXCEPTION);
     }
     return toArticleResponseDto(byUserName.get().getUserId(), articleBySlug.get());
+  }
+
+  @Override
+  @Transactional
+  public ArticleResponse updateArticle(final UserDetailsImpl userDetails, final String slug,
+                                       final UpdateArticle updateArticle) {
+    log.info("Updating article with slug: [{}]", slug);
+    final Optional<Article> optionalArticle = articleRepository.findBySlug(slug);
+    if (optionalArticle.isEmpty()) {
+      log.error("Unable to find article to update");
+      throw new ApplicationException(Error.ARTICLE_NOT_FOUND_EXCEPTION);
+    }
+    final Optional<User> byUserName =
+        userRepository.findByUserName(userDetails.getUsername());
+    if (byUserName.isEmpty() ||
+        !byUserName.get().getUserId().equals(optionalArticle.get().getUserId())) {
+      log.error("Unable to update article as the user requesting update is not author of article");
+      throw new ApplicationException(Error.ARTICLE_AUTHOR_INVALID_EXCEPTION);
+    }
+    log.debug("Checking articles fields to update and updating accordingly");
+    if (Objects.nonNull(updateArticle.title())) {
+      final String slugFromTitle = ArticleUtil.getSlugFromTitle(updateArticle.title());
+      final Optional<Article> articleRepositoryBySlug = articleRepository.findBySlug(slugFromTitle);
+      if (articleRepositoryBySlug.isPresent()) {
+        log.error("Article with new updated title: [{}] and corresponding slug: [{}], already "
+            + "present, unable to update article", updateArticle.title(), slugFromTitle);
+        throw new ApplicationException(Error.ARTICLE_TITLE_ALREADY_EXISTS_EXCEPTION);
+      }
+      optionalArticle.get().setTitle(updateArticle.title());
+      optionalArticle.get().setSlug(slugFromTitle);
+    }
+    if (Objects.nonNull(updateArticle.description())) {
+      optionalArticle.get().setDescription(updateArticle.description());
+    }
+    if (Objects.nonNull(updateArticle.body())) {
+      optionalArticle.get().setBody(updateArticle.body());
+    }
+    final Article updatedArticle = articleRepository.save(optionalArticle.get());
+    log.debug("Updated article with slug: [{}]", slug);
+    return toArticleResponseDto(byUserName.get().getUserId(), updatedArticle);
+  }
+
+  @Override
+  public void deleteArticle(final UserDetailsImpl userDetails, final String slug) {
+    log.info("Validating user request to delete article with slug: [{}]", slug);
+    try {
+      final Optional<Article> optionalArticle = articleRepository.findBySlug(slug);
+      if (optionalArticle.isEmpty()) {
+        throw new ApplicationException(Error.ARTICLE_NOT_FOUND_EXCEPTION);
+      }
+      final Optional<User> byUserName =
+          userRepository.findByUserName(userDetails.getUsername());
+      if (byUserName.isEmpty() ||
+          !byUserName.get().getUserId().equals(optionalArticle.get().getUserId())) {
+        throw new ApplicationException(Error.ARTICLE_AUTHOR_INVALID_EXCEPTION);
+      }
+      log.debug("Deleting article with slug: [{}]", slug);
+      articleRepository.delete(optionalArticle.get());
+    } catch (final Exception exception) {
+      log.error("Unable to delete article, cause: [{}]", exception.getMessage());
+      throw new ApplicationException(Error.ARTICLE_DELETE_EXCEPTION);
+    }
   }
 
   private void saveNewTags(final CreateArticleRequest articleRequest, final UUID articleId) {
