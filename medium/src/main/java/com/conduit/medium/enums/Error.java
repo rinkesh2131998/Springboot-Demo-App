@@ -28,8 +28,11 @@ public enum Error {
       HttpStatus.INTERNAL_SERVER_ERROR),
   COMMENT_CREATION_FAILED_EXCEPTION("Unable to add comments to article",
       HttpStatus.INTERNAL_SERVER_ERROR),
-  COMMENT_DELETION_FAILED_EXCEPTION("Unable to delete comment", HttpStatus.INTERNAL_SERVER_ERROR);
-
+  COMMENT_DELETION_FAILED_EXCEPTION("Unable to delete comment", HttpStatus.INTERNAL_SERVER_ERROR),
+  ARTICLE_FAVORITE_FAILED_EXCEPTION("Unable to favorite an article",
+      HttpStatus.INTERNAL_SERVER_ERROR),
+  ARTICLE_UNFAVOURITE_EXCEPTION("Unable to remove favorite article for user",
+      HttpStatus.INTERNAL_SERVER_ERROR);
   private final String errorMessage;
   private final HttpStatus httpStatus;
 

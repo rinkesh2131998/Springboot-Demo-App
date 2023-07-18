@@ -42,5 +42,12 @@ public interface TagService {
    * @param name to search tags by
    * @return tag entity
    */
-  Optional<Tag> getTabByName(String name);
+  Optional<Tag> getTagByName(String name);
+
+  /**
+   * get all distinct tags.
+   *
+   * @return list of tags
+   */
+  List<Tag> getTags();
 }

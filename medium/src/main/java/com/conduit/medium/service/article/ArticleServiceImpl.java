@@ -11,6 +11,7 @@ import com.conduit.medium.enums.Error;
 import com.conduit.medium.exception.ApplicationException;
 import com.conduit.medium.model.entity.Article;
 import com.conduit.medium.model.entity.Comment;
+import com.conduit.medium.model.entity.Favourite;
 import com.conduit.medium.model.entity.Tag;
 import com.conduit.medium.model.entity.TagToArticle;
 import com.conduit.medium.model.entity.User;
@@ -206,6 +207,59 @@ public class ArticleServiceImpl implements ArticleService {
     } catch (final Exception exception) {
       log.debug("Unable to delete comment, cause: [{}]", exception.getMessage());
       throw new ApplicationException(Error.USERNAME_NOT_FOUND_EXCEPTION);
+    }
+  }
+
+  @Override
+  public void favouriteArticle(final UserDetailsImpl userDetails, final String slug) {
+    log.info("Adding article with slug: [{}] to user: [{}] favorite", slug,
+        userDetails.getUsername());
+    final Optional<User> byUserName = userRepository.findByUserName(userDetails.getUsername());
+    if (byUserName.isEmpty()) {
+      throw new ApplicationException(Error.USERNAME_NOT_FOUND_EXCEPTION);
+    }
+    final Optional<Article> optionalArticle = articleRepository.findBySlug(slug);
+    if (optionalArticle.isEmpty()) {
+      throw new ApplicationException(Error.ARTICLE_NOT_FOUND_EXCEPTION);
+    }
+    try {
+      final Favourite favourite = new Favourite();
+      favourite.setUserId(byUserName.get().getUserId());
+      favourite.setArticleId(optionalArticle.get().getArticleId());
+      favouriteRepository.save(favourite);
+      log.info("Added article with slug: [{}] to user: [{}] favorite", slug,
+          userDetails.getUsername());
+    } catch (final Exception exception) {
+      log.error("Unable to favorite article: [{}], for user: [{}], cause: [{}]",
+          optionalArticle.get().getArticleId(), userDetails.getUsername(), exception.getMessage());
+      throw new ApplicationException(Error.ARTICLE_FAVORITE_FAILED_EXCEPTION);
+    }
+  }
+
+  @Override
+  public void unFavouriteArticle(final UserDetailsImpl userDetails, final String slug) {
+    log.info("Deleting article with slug: [{}] to user: [{}] favorite", slug,
+        userDetails.getUsername());
+    final Optional<User> byUserName = userRepository.findByUserName(userDetails.getUsername());
+    if (byUserName.isEmpty()) {
+      throw new ApplicationException(Error.USERNAME_NOT_FOUND_EXCEPTION);
+    }
+    final Optional<Article> optionalArticle = articleRepository.findBySlug(slug);
+    if (optionalArticle.isEmpty()) {
+      throw new ApplicationException(Error.ARTICLE_NOT_FOUND_EXCEPTION);
+    }
+    try {
+      final Optional<Favourite> byUserIdAndArticleId =
+          favouriteRepository.findByUserIdAndArticleId(byUserName.get().getUserId(),
+              optionalArticle.get()
+                  .getArticleId());
+      byUserIdAndArticleId.ifPresent(favouriteRepository::delete);
+      log.info("Deleted article with slug: [{}] to user: [{}] favorite", slug,
+          userDetails.getUsername());
+    } catch (final Exception exception) {
+      log.error("Unable to un-favorite article: [{}], for user: [{}], cause: [{}]",
+          optionalArticle.get().getArticleId(), userDetails.getUsername(), exception.getMessage());
+      throw new ApplicationException(Error.ARTICLE_FAVORITE_FAILED_EXCEPTION);
     }
   }
 

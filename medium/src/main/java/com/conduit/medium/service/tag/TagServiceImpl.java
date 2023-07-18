@@ -60,7 +60,12 @@ public class TagServiceImpl implements TagService {
   }
 
   @Override
-  public Optional<Tag> getTabByName(final String name) {
+  public Optional<Tag> getTagByName(final String name) {
     return tagRepository.findByName(name);
+  }
+
+  @Override
+  public List<Tag> getTags() {
+    return tagRepository.findAll().stream().toList();
   }
 }

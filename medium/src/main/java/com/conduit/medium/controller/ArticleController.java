@@ -113,6 +113,9 @@ public class ArticleController {
     return ResponseEntity.ok(commentResponse);
   }
 
+  /**
+   * add comment to an article
+   */
   @GetMapping("/{slug}/comments")
   public ResponseEntity<MultipleCommentResponse> getAllCommentsByArticle(
       @PathVariable final String slug) {
@@ -120,10 +123,33 @@ public class ArticleController {
     return ResponseEntity.ok(allComments);
   }
 
+  /**
+   * delete a comment from an article
+   */
   @DeleteMapping("/{slug}/comments/{:id}")
   public ResponseEntity<Void> deleteComment(@PathVariable final String slug,
                                             @PathVariable final long id) {
     articleService.deleteCommentForArticle(slug, id);
+    return ResponseEntity.ok().build();
+  }
+
+  /**
+   * favorite an article
+   */
+  @PostMapping("/{slug}/favorite")
+  public ResponseEntity<Void> favoriteArticle(
+      @AuthenticationPrincipal final UserDetailsImpl userDetails, @PathVariable final String slug) {
+    articleService.favouriteArticle(userDetails, slug);
+    return ResponseEntity.ok().build();
+  }
+
+  /**
+   * un-favorite and article.
+   */
+  @DeleteMapping("/{slug}/favorite")
+  public ResponseEntity<Void> unFavoriteArticle(
+      @AuthenticationPrincipal final UserDetailsImpl userDetails, @PathVariable final String slug) {
+    articleService.unFavouriteArticle(userDetails, slug);
     return ResponseEntity.ok().build();
   }
 }

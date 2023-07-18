@@ -93,4 +93,19 @@ public interface ArticleService {
    */
   void deleteCommentForArticle(String slug, long id);
 
+  /**
+   * favorite an article for the given user.
+   *
+   * @param userDetails to fetch user details
+   * @param slug        article to be favorited
+   */
+  void favouriteArticle(UserDetailsImpl userDetails, String slug);
+
+  /**
+   * un favourite an article for the given user.
+   *
+   * @param userDetails to fetch user details
+   * @param slug        article to un-favorite
+   */
+  void unFavouriteArticle(UserDetailsImpl userDetails, String slug);
 }
