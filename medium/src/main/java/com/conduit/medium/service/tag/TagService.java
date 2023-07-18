@@ -2,6 +2,7 @@ package com.conduit.medium.service.tag;
 
 import com.conduit.medium.model.entity.Tag;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -34,4 +35,12 @@ public interface TagService {
    * @return list of all tagList found
    */
   List<String> getTags(UUID articleId);
+
+  /**
+   * fetch the tag object by name.
+   *
+   * @param name to search tags by
+   * @return tag entity
+   */
+  Optional<Tag> getTabByName(String name);
 }

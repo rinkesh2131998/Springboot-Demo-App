@@ -12,4 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TagToArticleRepository extends JpaRepository<TagToArticle, UUID> {
   List<TagToArticle> findAllByArticleId(UUID articleId);
+
+
 }

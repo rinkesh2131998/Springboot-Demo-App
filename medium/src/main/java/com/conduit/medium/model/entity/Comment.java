@@ -22,7 +22,9 @@ public class Comment {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "comment_id")
-  private UUID commentId;
+  private long commentId;
+  @Column(name = "body")
+  private String body;
   @Column(name = "user_id")
   private UUID userId;
   @Column(name = "article_id")

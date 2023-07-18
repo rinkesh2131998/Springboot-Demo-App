@@ -1,8 +1,12 @@
 package com.conduit.medium.util;
 
+import com.conduit.medium.dto.article.AddCommentRequest;
 import com.conduit.medium.dto.article.CreateArticleRequest;
 import com.conduit.medium.model.entity.Article;
+import com.conduit.medium.model.entity.Comment;
+import com.conduit.medium.model.entity.User;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -41,6 +45,22 @@ public class ArticleUtil {
     article.setUserId(userId);
     article.setCreatedAt(LocalDateTime.now());
     return article;
+  }
+
+  /**
+   * used to create a comment entity to be saved using the request args.
+   *
+   * @return comment object
+   */
+  public static Comment createCommentEntity(final AddCommentRequest addCommentRequest,
+                                            final Optional<Article> optionalArticle,
+                                            final Optional<User> byUserName) {
+    final Comment comment = new Comment();
+    comment.setArticleId(optionalArticle.get().getArticleId());
+    comment.setUserId(byUserName.get().getUserId());
+    comment.setBody(addCommentRequest.body());
+    comment.setCreatedAt(LocalDateTime.now());
+    return comment;
   }
 
 }

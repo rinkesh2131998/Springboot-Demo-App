@@ -25,7 +25,10 @@ public enum Error {
   ARTICLE_TITLE_ALREADY_EXISTS_EXCEPTION("Unable to change article title as it already exists, "
       + "cancelling request", HttpStatus.BAD_REQUEST),
   ARTICLE_DELETE_EXCEPTION("Unable to delete the article, retry again",
-      HttpStatus.INTERNAL_SERVER_ERROR);
+      HttpStatus.INTERNAL_SERVER_ERROR),
+  COMMENT_CREATION_FAILED_EXCEPTION("Unable to add comments to article",
+      HttpStatus.INTERNAL_SERVER_ERROR),
+  COMMENT_DELETION_FAILED_EXCEPTION("Unable to delete comment", HttpStatus.INTERNAL_SERVER_ERROR);
 
   private final String errorMessage;
   private final HttpStatus httpStatus;

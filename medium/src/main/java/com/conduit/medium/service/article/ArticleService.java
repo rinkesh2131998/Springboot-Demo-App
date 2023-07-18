@@ -1,9 +1,13 @@
 package com.conduit.medium.service.article;
 
+import com.conduit.medium.dto.article.AddCommentRequest;
 import com.conduit.medium.dto.article.ArticleResponse;
+import com.conduit.medium.dto.article.CommentResponse;
 import com.conduit.medium.dto.article.CreateArticleRequest;
+import com.conduit.medium.dto.article.MultipleCommentResponse;
 import com.conduit.medium.dto.article.UpdateArticle;
 import com.conduit.medium.security.service.UserDetailsImpl;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 /**
@@ -48,4 +52,45 @@ public interface ArticleService {
    * @param slug        used to fetch the article
    */
   void deleteArticle(UserDetailsImpl userDetails, String slug);
+
+  /**
+   * get the most recent articles.
+   *
+   * @param limit     number of articles to return
+   * @param offset    to applied to limit
+   * @param tag       optional filter
+   * @param author    optional filter
+   * @param favorited optional filter
+   * @return most recent articles.
+   */
+  List<ArticleResponse> getMostRecentArticles(long limit, long offset, String tag, String author,
+                                              String favorited);
+
+  /**
+   * add new comments to articles.
+   *
+   * @param userDetails       to fetch the comment author
+   * @param slug              to fetch the article to add comment to
+   * @param addCommentRequest comment to add
+   * @return new created comment with author
+   */
+  CommentResponse addCommentToArticle(UserDetailsImpl userDetails, String slug,
+                                      AddCommentRequest addCommentRequest);
+
+  /**
+   * return all comments for this article.
+   *
+   * @param slug to fetch the article
+   * @return all comments
+   */
+  MultipleCommentResponse getAllComments(String slug);
+
+  /**
+   * delete a comment using its id for the given slug
+   *
+   * @param slug to get the article info
+   * @param id   of the comment
+   */
+  void deleteCommentForArticle(String slug, long id);
+
 }

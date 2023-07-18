@@ -1,16 +1,21 @@
 package com.conduit.medium.service.article;
 
+import com.conduit.medium.dto.article.AddCommentRequest;
 import com.conduit.medium.dto.article.ArticleResponse;
+import com.conduit.medium.dto.article.CommentResponse;
 import com.conduit.medium.dto.article.CreateArticleRequest;
+import com.conduit.medium.dto.article.MultipleCommentResponse;
 import com.conduit.medium.dto.article.UpdateArticle;
 import com.conduit.medium.dto.profile.ProfileResponse;
 import com.conduit.medium.enums.Error;
 import com.conduit.medium.exception.ApplicationException;
 import com.conduit.medium.model.entity.Article;
+import com.conduit.medium.model.entity.Comment;
 import com.conduit.medium.model.entity.Tag;
 import com.conduit.medium.model.entity.TagToArticle;
 import com.conduit.medium.model.entity.User;
 import com.conduit.medium.repository.ArticleRepository;
+import com.conduit.medium.repository.CommentRepository;
 import com.conduit.medium.repository.FavouriteRepository;
 import com.conduit.medium.repository.TagToArticleRepository;
 import com.conduit.medium.repository.UserRepository;
@@ -18,6 +23,7 @@ import com.conduit.medium.security.service.UserDetailsImpl;
 import com.conduit.medium.service.profile.ProfileService;
 import com.conduit.medium.service.tag.TagService;
 import com.conduit.medium.util.ArticleUtil;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -41,6 +47,8 @@ public class ArticleServiceImpl implements ArticleService {
   private final ProfileService profileService;
   private final TagToArticleRepository toArticleRepository;
   private final FavouriteRepository favouriteRepository;
+  private final CommentRepository commentRepository;
+  private final EntityManager entityManager;
 
   @Override
   // @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -145,6 +153,73 @@ public class ArticleServiceImpl implements ArticleService {
     }
   }
 
+  @Override
+  public List<ArticleResponse> getMostRecentArticles(final long limit, final long offset,
+                                                     final String tag,
+                                                     final String author, final String favorited) {
+
+    log.info("Fetching list of most recent articles for limit: [{}] and offset: [{}]", limit,
+        offset);
+    return null;
+  }
+
+  @Override
+  public CommentResponse addCommentToArticle(final UserDetailsImpl userDetails, final String slug,
+                                             final AddCommentRequest addCommentRequest) {
+    log.info("Adding new comment to article with slug: [{}]", slug);
+    final Optional<Article> optionalArticle = articleRepository.findBySlug(slug);
+    if (optionalArticle.isEmpty()) {
+      throw new ApplicationException(Error.ARTICLE_NOT_FOUND_EXCEPTION);
+    }
+    final Optional<User> byUserName =
+        userRepository.findByUserName(userDetails.getUsername());
+    if (byUserName.isEmpty()) {
+      throw new ApplicationException(Error.ARTICLE_AUTHOR_INVALID_EXCEPTION);
+    }
+    final Comment comment = commentRepository.save(
+        ArticleUtil.createCommentEntity(addCommentRequest, optionalArticle, byUserName));
+    return toCommentDto(comment);
+  }
+
+  @Override
+  public MultipleCommentResponse getAllComments(final String slug) {
+    log.info("Fetching all comments for article with slug: [{}]", slug);
+    final Optional<Article> optionalArticle = articleRepository.findBySlug(slug);
+    if (optionalArticle.isEmpty()) {
+      throw new ApplicationException(Error.ARTICLE_NOT_FOUND_EXCEPTION);
+    }
+    final List<CommentResponse> commentResponses =
+        commentRepository.findByArticleId(optionalArticle.get().getArticleId()).stream().map(
+            this::toCommentDto).toList();
+    return MultipleCommentResponse.builder().commentResponses(commentResponses).build();
+  }
+
+  @Override
+  public void deleteCommentForArticle(final String slug, final long id) {
+    log.info("Fetching all comments for article with slug: [{}]", slug);
+    final Optional<Article> optionalArticle = articleRepository.findBySlug(slug);
+    if (optionalArticle.isEmpty()) {
+      throw new ApplicationException(Error.ARTICLE_NOT_FOUND_EXCEPTION);
+    }
+    try {
+      commentRepository.deleteById(id);
+    } catch (final Exception exception) {
+      log.debug("Unable to delete comment, cause: [{}]", exception.getMessage());
+      throw new ApplicationException(Error.USERNAME_NOT_FOUND_EXCEPTION);
+    }
+  }
+
+  private CommentResponse toCommentDto(final Comment comment) {
+    final ProfileResponse profileResponse =
+        getProfileResponse(comment.getUserId(), comment.getUserId());
+    return CommentResponse.builder()
+        .id(comment.getCommentId())
+        .createdAt(comment.getCreatedAt())
+        .updatedAt(comment.getUpdatedAt())
+        .body(comment.getBody())
+        .author(ArticleResponse.Author.builder().profileResponse(profileResponse).build()).build();
+  }
+
   private void saveNewTags(final CreateArticleRequest articleRequest, final UUID articleId) {
     log.debug("Mapping any tagList needed to article: [{}]", articleId);
     if (Objects.isNull(articleRequest.tagList())) {
@@ -165,10 +240,8 @@ public class ArticleServiceImpl implements ArticleService {
   private ArticleResponse toArticleResponseDto(UUID userId, Article article) {
 
     log.debug("Fetching article author for article id: [{}]", article.getArticleId());
-    final Optional<User> userFromUserId = getUserFromUserId(article.getUserId());
     final ProfileResponse profileResponse =
-        userFromUserId.map(user -> profileService.getProfile(userId, user.getUserId()))
-            .orElse(null);
+        getProfileResponse(userId, article.getUserId());
     final ArticleResponse.Author author = ArticleResponse.Author.builder()
         .profileResponse(profileResponse).build();
     return ArticleResponse.builder()
@@ -182,6 +255,12 @@ public class ArticleServiceImpl implements ArticleService {
         .favorited(favouriteRepository.existsByUserIdAndArticleId(userId, article.getArticleId()))
         .favoritesCount(favouriteRepository.countByArticleId(article.getArticleId()))
         .author(author).build();
+  }
+
+  private ProfileResponse getProfileResponse(final UUID userId, final UUID requestingUserId) {
+    final Optional<User> userFromUserId = getUserFromUserId(requestingUserId);
+    return userFromUserId.map(user -> profileService.getProfile(userId, user.getUserId()))
+        .orElse(null);
   }
 
   private Optional<User> getUserFromUserId(final UUID userId) {

@@ -20,10 +20,6 @@ ALTER COLUMN tag_id SET DEFAULT gen_random_uuid();
 ALTER TABLE tags_to_articles
 ALTER COLUMN id SET DEFAULT gen_random_uuid();
 
--- Update "comments" table
-ALTER TABLE comments
-ALTER COLUMN comment_id SET DEFAULT gen_random_uuid();
-
 -- Update "favourites" table
 ALTER TABLE favourites
 ALTER COLUMN id SET DEFAULT gen_random_uuid();

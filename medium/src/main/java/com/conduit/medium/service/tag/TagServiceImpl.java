@@ -58,4 +58,9 @@ public class TagServiceImpl implements TagService {
         .map(Tag::getName)
         .toList();
   }
+
+  @Override
+  public Optional<Tag> getTabByName(final String name) {
+    return tagRepository.findByName(name);
+  }
 }

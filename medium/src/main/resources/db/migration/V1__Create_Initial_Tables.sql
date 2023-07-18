@@ -54,7 +54,8 @@ CREATE TABLE IF NOT EXISTS tags_to_articles (
 
 --Create "comments" table
 CREATE TABLE IF NOT EXISTS comments (
-    comment_id UUID PRIMARY KEY,
+    comment_id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    body TEXT,
     user_id UUID NOT NULL,
     article_id UUID NOT NULL,
     created_at TIMESTAMP NOT NULL,
