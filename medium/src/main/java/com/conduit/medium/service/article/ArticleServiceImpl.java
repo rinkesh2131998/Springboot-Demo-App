@@ -5,6 +5,7 @@ import com.conduit.medium.dto.article.ArticleResponse;
 import com.conduit.medium.dto.article.CommentResponse;
 import com.conduit.medium.dto.article.CreateArticleRequest;
 import com.conduit.medium.dto.article.MultipleCommentResponse;
+import com.conduit.medium.dto.article.SingleCommentResponse;
 import com.conduit.medium.dto.article.UpdateArticle;
 import com.conduit.medium.dto.profile.ProfileResponse;
 import com.conduit.medium.enums.Error;
@@ -169,14 +170,15 @@ public class ArticleServiceImpl implements ArticleService {
   @Override
   public List<ArticleResponse> getFeedArticles(final UserDetailsImpl userDetails, final long limit,
                                                final long offset) {
-    // TODO: 7/19/23 implement this api 
+    // TODO: 7/19/23 implement this api
     log.error("todo: implement the api");
     return null;
   }
 
   @Override
-  public CommentResponse addCommentToArticle(final UserDetailsImpl userDetails, final String slug,
-                                             final AddCommentRequest addCommentRequest) {
+  public SingleCommentResponse addCommentToArticle(final UserDetailsImpl userDetails,
+                                                   final String slug,
+                                                   final AddCommentRequest addCommentRequest) {
     log.info("Adding new comment to article with slug: [{}]", slug);
     final Optional<Article> optionalArticle = articleRepository.findBySlug(slug);
     if (optionalArticle.isEmpty()) {
@@ -187,9 +189,11 @@ public class ArticleServiceImpl implements ArticleService {
     if (byUserName.isEmpty()) {
       throw new ApplicationException(Error.ARTICLE_AUTHOR_INVALID_EXCEPTION);
     }
-    final Comment comment = commentRepository.save(
-        ArticleUtil.createCommentEntity(addCommentRequest, optionalArticle, byUserName));
-    return toCommentDto(comment);
+    final Comment commentEntity =
+        ArticleUtil.createCommentEntity(addCommentRequest, optionalArticle.get().getArticleId(),
+            byUserName.get().getUserId());
+    final Comment comment = commentRepository.save(commentEntity);
+    return SingleCommentResponse.builder().comment(toCommentDto(comment)).build();
   }
 
   @Override
@@ -202,7 +206,7 @@ public class ArticleServiceImpl implements ArticleService {
     final List<CommentResponse> commentResponses =
         commentRepository.findByArticleId(optionalArticle.get().getArticleId()).stream().map(
             this::toCommentDto).toList();
-    return MultipleCommentResponse.builder().commentResponses(commentResponses).build();
+    return MultipleCommentResponse.builder().comments(commentResponses).build();
   }
 
   @Override
@@ -221,7 +225,7 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public void favouriteArticle(final UserDetailsImpl userDetails, final String slug) {
+  public ArticleResponse favouriteArticle(final UserDetailsImpl userDetails, final String slug) {
     log.info("Adding article with slug: [{}] to user: [{}] favorite", slug,
         userDetails.getUsername());
     final Optional<User> byUserName = userRepository.findByUserName(userDetails.getUsername());
@@ -239,6 +243,7 @@ public class ArticleServiceImpl implements ArticleService {
       favouriteRepository.save(favourite);
       log.info("Added article with slug: [{}] to user: [{}] favorite", slug,
           userDetails.getUsername());
+      return getArticle(userDetails, slug);
     } catch (final Exception exception) {
       log.error("Unable to favorite article: [{}], for user: [{}], cause: [{}]",
           optionalArticle.get().getArticleId(), userDetails.getUsername(), exception.getMessage());
@@ -247,7 +252,7 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public void unFavouriteArticle(final UserDetailsImpl userDetails, final String slug) {
+  public ArticleResponse unFavouriteArticle(final UserDetailsImpl userDetails, final String slug) {
     log.info("Deleting article with slug: [{}] to user: [{}] favorite", slug,
         userDetails.getUsername());
     final Optional<User> byUserName = userRepository.findByUserName(userDetails.getUsername());
@@ -266,6 +271,7 @@ public class ArticleServiceImpl implements ArticleService {
       byUserIdAndArticleId.ifPresent(favouriteRepository::delete);
       log.info("Deleted article with slug: [{}] to user: [{}] favorite", slug,
           userDetails.getUsername());
+      return getArticle(userDetails, slug);
     } catch (final Exception exception) {
       log.error("Unable to un-favorite article: [{}], for user: [{}], cause: [{}]",
           optionalArticle.get().getArticleId(), userDetails.getUsername(), exception.getMessage());

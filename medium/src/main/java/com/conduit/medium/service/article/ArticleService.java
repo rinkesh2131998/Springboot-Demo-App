@@ -2,9 +2,9 @@ package com.conduit.medium.service.article;
 
 import com.conduit.medium.dto.article.AddCommentRequest;
 import com.conduit.medium.dto.article.ArticleResponse;
-import com.conduit.medium.dto.article.CommentResponse;
 import com.conduit.medium.dto.article.CreateArticleRequest;
 import com.conduit.medium.dto.article.MultipleCommentResponse;
+import com.conduit.medium.dto.article.SingleCommentResponse;
 import com.conduit.medium.dto.article.UpdateArticle;
 import com.conduit.medium.security.service.UserDetailsImpl;
 import java.util.List;
@@ -84,8 +84,8 @@ public interface ArticleService {
    * @param addCommentRequest comment to add
    * @return new created comment with author
    */
-  CommentResponse addCommentToArticle(UserDetailsImpl userDetails, String slug,
-                                      AddCommentRequest addCommentRequest);
+  SingleCommentResponse addCommentToArticle(UserDetailsImpl userDetails, String slug,
+                                            AddCommentRequest addCommentRequest);
 
   /**
    * return all comments for this article.
@@ -109,7 +109,7 @@ public interface ArticleService {
    * @param userDetails to fetch user details
    * @param slug        article to be favorited
    */
-  void favouriteArticle(UserDetailsImpl userDetails, String slug);
+  ArticleResponse favouriteArticle(UserDetailsImpl userDetails, String slug);
 
   /**
    * un favourite an article for the given user.
@@ -117,5 +117,5 @@ public interface ArticleService {
    * @param userDetails to fetch user details
    * @param slug        article to un-favorite
    */
-  void unFavouriteArticle(UserDetailsImpl userDetails, String slug);
+  ArticleResponse unFavouriteArticle(UserDetailsImpl userDetails, String slug);
 }

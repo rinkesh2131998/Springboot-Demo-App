@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -20,7 +21,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Comment {
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.AUTO, generator = "comments_seq_generator")
+  @SequenceGenerator(name = "comments_seq_generator", sequenceName = "comments_seq", allocationSize = 1)
   @Column(name = "comment_id")
   private long commentId;
   @Column(name = "body")

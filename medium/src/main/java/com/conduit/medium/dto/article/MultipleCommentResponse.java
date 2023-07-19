@@ -7,5 +7,5 @@ import lombok.Builder;
  * data class to return all comments for an article.
  */
 @Builder
-public record MultipleCommentResponse(List<CommentResponse> commentResponses) {
+public record MultipleCommentResponse(List<CommentResponse> comments) {
 }

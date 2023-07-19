@@ -4,9 +4,7 @@ import com.conduit.medium.dto.article.AddCommentRequest;
 import com.conduit.medium.dto.article.CreateArticleRequest;
 import com.conduit.medium.model.entity.Article;
 import com.conduit.medium.model.entity.Comment;
-import com.conduit.medium.model.entity.User;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -53,11 +51,11 @@ public class ArticleUtil {
    * @return comment object
    */
   public static Comment createCommentEntity(final AddCommentRequest addCommentRequest,
-                                            final Optional<Article> optionalArticle,
-                                            final Optional<User> byUserName) {
+                                            final UUID optionalArticle,
+                                            final UUID byUserName) {
     final Comment comment = new Comment();
-    comment.setArticleId(optionalArticle.get().getArticleId());
-    comment.setUserId(byUserName.get().getUserId());
+    comment.setArticleId(optionalArticle);
+    comment.setUserId(byUserName);
     comment.setBody(addCommentRequest.body());
     comment.setCreatedAt(LocalDateTime.now());
     return comment;

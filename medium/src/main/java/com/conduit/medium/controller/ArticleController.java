@@ -2,9 +2,9 @@ package com.conduit.medium.controller;
 
 import com.conduit.medium.dto.article.AddCommentRequest;
 import com.conduit.medium.dto.article.ArticleResponse;
-import com.conduit.medium.dto.article.CommentResponse;
 import com.conduit.medium.dto.article.CreateArticleRequest;
 import com.conduit.medium.dto.article.MultipleCommentResponse;
+import com.conduit.medium.dto.article.SingleCommentResponse;
 import com.conduit.medium.dto.article.UpdateArticle;
 import com.conduit.medium.security.service.UserDetailsImpl;
 import com.conduit.medium.service.article.ArticleService;
@@ -120,11 +120,11 @@ public class ArticleController {
    * add new comments to an article.
    */
   @PostMapping("/{slug}/comments")
-  public ResponseEntity<CommentResponse> addComments(
+  public ResponseEntity<SingleCommentResponse> addComments(
       @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable final String slug,
       @RequestBody final
       AddCommentRequest addCommentRequest) {
-    final CommentResponse commentResponse =
+    final SingleCommentResponse commentResponse =
         articleService.addCommentToArticle(userDetails, slug, addCommentRequest);
     return ResponseEntity.ok(commentResponse);
   }
@@ -145,6 +145,7 @@ public class ArticleController {
   @DeleteMapping("/{slug}/comments/{:id}")
   public ResponseEntity<Void> deleteComment(@PathVariable final String slug,
                                             @PathVariable final long id) {
+    log.info("testing");
     articleService.deleteCommentForArticle(slug, id);
     return ResponseEntity.ok().build();
   }
@@ -153,19 +154,19 @@ public class ArticleController {
    * favorite an article
    */
   @PostMapping("/{slug}/favorite")
-  public ResponseEntity<Void> favoriteArticle(
+  public ResponseEntity<ArticleResponse> favoriteArticle(
       @AuthenticationPrincipal final UserDetailsImpl userDetails, @PathVariable final String slug) {
-    articleService.favouriteArticle(userDetails, slug);
-    return ResponseEntity.ok().build();
+    final ArticleResponse articleResponse = articleService.favouriteArticle(userDetails, slug);
+    return ResponseEntity.ok(articleResponse);
   }
 
   /**
    * un-favorite and article.
    */
   @DeleteMapping("/{slug}/favorite")
-  public ResponseEntity<Void> unFavoriteArticle(
+  public ResponseEntity<ArticleResponse> unFavoriteArticle(
       @AuthenticationPrincipal final UserDetailsImpl userDetails, @PathVariable final String slug) {
-    articleService.unFavouriteArticle(userDetails, slug);
-    return ResponseEntity.ok().build();
+    final ArticleResponse articleResponse = articleService.unFavouriteArticle(userDetails, slug);
+    return ResponseEntity.ok(articleResponse);
   }
 }
