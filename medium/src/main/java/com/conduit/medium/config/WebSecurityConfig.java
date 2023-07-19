@@ -76,7 +76,7 @@ public class WebSecurityConfig {
         UsernamePasswordAuthenticationFilter.class);
     http.authorizeHttpRequests(auth -> {
       auth.requestMatchers("/actuator", "/actuator/**", "/api/users", "/api/users/login",
-              "/v3/**", "/swagger-ui.html", "/swagger-ui/**")
+              "/v3/**", "/swagger-ui.html", "/swagger-ui/**", "/api/tags/**")
           .permitAll()
           .anyRequest().authenticated();
     });

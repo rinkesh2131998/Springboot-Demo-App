@@ -25,6 +25,7 @@ import com.conduit.medium.service.profile.ProfileService;
 import com.conduit.medium.service.tag.TagService;
 import com.conduit.medium.util.ArticleUtil;
 import jakarta.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -127,6 +128,7 @@ public class ArticleServiceImpl implements ArticleService {
     if (Objects.nonNull(updateArticle.body())) {
       optionalArticle.get().setBody(updateArticle.body());
     }
+    optionalArticle.get().setUpdatedAt(LocalDateTime.now());
     final Article updatedArticle = articleRepository.save(optionalArticle.get());
     log.debug("Updated article with slug: [{}]", slug);
     return toArticleResponseDto(byUserName.get().getUserId(), updatedArticle);
@@ -161,6 +163,14 @@ public class ArticleServiceImpl implements ArticleService {
 
     log.info("Fetching list of most recent articles for limit: [{}] and offset: [{}]", limit,
         offset);
+    return null;
+  }
+
+  @Override
+  public List<ArticleResponse> getFeedArticles(final UserDetailsImpl userDetails, final long limit,
+                                               final long offset) {
+    // TODO: 7/19/23 implement this api 
+    log.error("todo: implement the api");
     return null;
   }
 

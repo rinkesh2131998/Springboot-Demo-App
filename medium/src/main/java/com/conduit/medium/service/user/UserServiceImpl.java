@@ -7,6 +7,7 @@ import com.conduit.medium.exception.ApplicationException;
 import com.conduit.medium.model.entity.User;
 import com.conduit.medium.repository.UserRepository;
 import com.conduit.medium.security.service.UserDetailsImpl;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.Data;
@@ -71,6 +72,7 @@ public class UserServiceImpl implements UserService {
     if (validateField(payload.bio())) {
       user.setBio(payload.bio());
     }
+    user.setUpdatedAt(LocalDateTime.now());
   }
 
   private User validateUserExists(final UserDetailsImpl userDetails) {

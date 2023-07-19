@@ -40,7 +40,7 @@ public class UserController {
     return authService.loginUser(payload);
   }
 
-  @GetMapping("/users")
+  @GetMapping("/user")
   public UserResponse getUser(@AuthenticationPrincipal final UserDetailsImpl payload) {
     return userService.getCurrentUser(payload);
   }

@@ -101,6 +101,22 @@ public class ArticleController {
   }
 
   /**
+   * get list of all the most recent articles
+   *
+   * @return list of most recent articles wrt the given limit and offset
+   */
+  @GetMapping("/feed")
+  public ResponseEntity<List<ArticleResponse>> getArticlesByUser(
+      @AuthenticationPrincipal UserDetailsImpl userDetails,
+      @RequestParam(defaultValue = "20") final long limit,
+      @RequestParam(defaultValue = "0") final long offset
+  ) {
+    final List<ArticleResponse> feedArticles =
+        articleService.getFeedArticles(userDetails, limit, offset);
+    return ResponseEntity.ok(feedArticles);
+  }
+
+  /**
    * add new comments to an article.
    */
   @PostMapping("/{slug}/comments")

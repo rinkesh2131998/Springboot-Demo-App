@@ -67,6 +67,16 @@ public interface ArticleService {
                                               String favorited);
 
   /**
+   * get feed articles of a user
+   *
+   * @param userDetails for which articles to fetch
+   * @param limit       for pagination
+   * @param offset      for pagination
+   * @return articles by a user
+   */
+  List<ArticleResponse> getFeedArticles(UserDetailsImpl userDetails, long limit, long offset);
+
+  /**
    * add new comments to articles.
    *
    * @param userDetails       to fetch the comment author
