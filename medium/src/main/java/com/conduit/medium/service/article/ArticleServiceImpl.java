@@ -25,6 +25,7 @@ import com.conduit.medium.security.service.UserDetailsImpl;
 import com.conduit.medium.service.profile.ProfileService;
 import com.conduit.medium.service.tag.TagService;
 import com.conduit.medium.util.ArticleUtil;
+import com.conduit.medium.util.Constant;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,7 +64,7 @@ public class ArticleServiceImpl implements ArticleService {
     final Optional<User> byUserName =
         userRepository.findByUserName(userDetails.getUsername());
     if (byUserName.isEmpty()) {
-      log.debug("Unable to fetch user id for the user requesting creation of article");
+      log.debug(Constant.USERNAME_NOT_FOUND_MESSAGE);
       throw new ApplicationException(Error.USERNAME_NOT_FOUND_EXCEPTION);
     }
     try {
@@ -88,7 +90,7 @@ public class ArticleServiceImpl implements ArticleService {
     final Optional<User> byUserName =
         userRepository.findByUserName(userDetails.getUsername());
     if (byUserName.isEmpty()) {
-      log.debug("Unable to fetch user id for the user requesting creation of article");
+      log.debug(Constant.USERNAME_NOT_FOUND_MESSAGE);
       throw new ApplicationException(Error.USERNAME_NOT_FOUND_EXCEPTION);
     }
     return toArticleResponseDto(byUserName.get().getUserId(), articleBySlug.get());
@@ -158,21 +160,52 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public List<ArticleResponse> getMostRecentArticles(final long limit, final long offset,
+  public List<ArticleResponse> getMostRecentArticles(final UserDetailsImpl userDetails,
+                                                     final int limit, final int offset,
                                                      final String tag,
                                                      final String author, final String favorited) {
-
     log.info("Fetching list of most recent articles for limit: [{}] and offset: [{}]", limit,
         offset);
-    return null;
+    final Optional<User> byUserName =
+        userRepository.findByUserName(userDetails.getUsername());
+    if (byUserName.isEmpty()) {
+      log.debug(Constant.USERNAME_NOT_FOUND_MESSAGE);
+      throw new ApplicationException(Error.USERNAME_NOT_FOUND_EXCEPTION);
+    }
+    try {
+      final List<Article> recentArticles =
+          articleRepository.findMostRecentArticles(tag, author, favorited,
+              PageRequest.of(limit, offset));
+      log.info("Fetched articles with the given filters.");
+      return recentArticles.parallelStream()
+          .map(article -> toArticleResponseDto(byUserName.get().getUserId(), article)).toList();
+    } catch (final Exception exception) {
+      log.error("Unable to get most recent articles, cause: [{}]", exception.getMessage());
+      throw new ApplicationException(Error.ARTICLES_NOT_FOUND_EXCEPTION);
+    }
   }
 
   @Override
   public List<ArticleResponse> getFeedArticles(final UserDetailsImpl userDetails, final long limit,
                                                final long offset) {
-    // TODO: 7/19/23 implement this api
-    log.error("todo: implement the api");
-    return null;
+    log.info("Fetching feed articles");
+    final Optional<User> byUserName =
+        userRepository.findByUserName(userDetails.getUsername());
+    if (byUserName.isEmpty()) {
+      log.debug(Constant.USERNAME_NOT_FOUND_MESSAGE);
+      throw new ApplicationException(Error.USERNAME_NOT_FOUND_EXCEPTION);
+    }
+    try {
+      final List<Article> byUserIdOrderByCreatedAt =
+          articleRepository.findByUserIdOrderByCreatedAt(byUserName.get().getUserId());
+      log.info("Fetched feed articles for user: [{}]", userDetails.getUsername());
+      return byUserIdOrderByCreatedAt.parallelStream()
+          .map(article -> toArticleResponseDto(byUserName.get()
+              .getUserId(), article)).toList();
+    } catch (final Exception exception) {
+      log.error("Unable to get feed articles, cause: [{}]", exception.getMessage());
+      throw new ApplicationException(Error.ARTICLES_NOT_FOUND_EXCEPTION);
+    }
   }
 
   @Override

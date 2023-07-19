@@ -32,6 +32,8 @@ public enum Error {
   ARTICLE_FAVORITE_FAILED_EXCEPTION("Unable to favorite an article",
       HttpStatus.INTERNAL_SERVER_ERROR),
   ARTICLE_UNFAVOURITE_EXCEPTION("Unable to remove favorite article for user",
+      HttpStatus.INTERNAL_SERVER_ERROR),
+  ARTICLES_NOT_FOUND_EXCEPTION("Unable to get articles",
       HttpStatus.INTERNAL_SERVER_ERROR);
   private final String errorMessage;
   private final HttpStatus httpStatus;

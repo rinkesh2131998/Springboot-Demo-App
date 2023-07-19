@@ -89,14 +89,15 @@ public class ArticleController {
    */
   @GetMapping()
   public ResponseEntity<List<ArticleResponse>> getArticles(
-      @RequestParam(defaultValue = "20") final long limit,
-      @RequestParam(defaultValue = "0") final long offset,
+      @AuthenticationPrincipal UserDetailsImpl userDetails,
+      @RequestParam(defaultValue = "20") final int limit,
+      @RequestParam(defaultValue = "0") final int offset,
       @RequestParam(required = false) final String tag,
       @RequestParam(required = false) final String author,
       @RequestParam(required = false) final String favorited
   ) {
     final List<ArticleResponse> mostRecentArticles =
-        articleService.getMostRecentArticles(limit, offset, tag, author, favorited);
+        articleService.getMostRecentArticles(userDetails, limit, offset, tag, author, favorited);
     return ResponseEntity.ok(mostRecentArticles);
   }
 

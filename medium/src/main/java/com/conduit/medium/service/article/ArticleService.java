@@ -56,14 +56,16 @@ public interface ArticleService {
   /**
    * get the most recent articles.
    *
-   * @param limit     number of articles to return
-   * @param offset    to applied to limit
-   * @param tag       optional filter
-   * @param author    optional filter
-   * @param favorited optional filter
+   * @param userDetails
+   * @param limit       number of articles to return
+   * @param offset      to applied to limit
+   * @param tag         optional filter
+   * @param author      optional filter
+   * @param favorited   optional filter
    * @return most recent articles.
    */
-  List<ArticleResponse> getMostRecentArticles(long limit, long offset, String tag, String author,
+  List<ArticleResponse> getMostRecentArticles(final UserDetailsImpl userDetails, int limit,
+                                              int offset, String tag, String author,
                                               String favorited);
 
   /**
