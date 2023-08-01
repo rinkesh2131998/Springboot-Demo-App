@@ -116,7 +116,8 @@ public class ArticleServiceImpl implements ArticleService {
     log.debug("Checking articles fields to update and updating accordingly");
     if (Objects.nonNull(updateArticle.title())) {
       final String slugFromTitle = ArticleUtil.getSlugFromTitle(updateArticle.title());
-      final Optional<Article> articleRepositoryBySlug = articleRepository.findBySlug(slugFromTitle);
+      final Optional<Article> articleRepositoryBySlug =
+          articleRepository.findBySlug(slugFromTitle);
       if (articleRepositoryBySlug.isPresent()) {
         log.error("Article with new updated title: [{}] and corresponding slug: [{}], already "
             + "present, unable to update article", updateArticle.title(), slugFromTitle);
@@ -175,7 +176,7 @@ public class ArticleServiceImpl implements ArticleService {
     try {
       final List<Article> recentArticles =
           articleRepository.findMostRecentArticles(tag, author, favorited,
-              PageRequest.of(limit, offset));
+              PageRequest.of(offset, limit));
       log.info("Fetched articles with the given filters.");
       return recentArticles.parallelStream()
           .map(article -> toArticleResponseDto(byUserName.get().getUserId(), article)).toList();
